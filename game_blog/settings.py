@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_mk8xa+$rdhhk4_0g%!9@(nczkm-3d=^6dn1aeihe#1=i1_4h@'
+SECRET_KEY = os.environ.get('SECRET_KEY_SIMPLE_BLOG')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -61,7 +61,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'accounts.middleware.restrict_admin_page_middleware.RestrictStaffToAdminMiddleware',
-
 ]
 
 ROOT_URLCONF = 'game_blog.urls'
@@ -155,9 +154,9 @@ USE_S3 = True
 
 if USE_S3:
     # AWS S3 Bucket (for static)
-    AWS_ACCESS_KEY_ID = 'AKIARNSZRC3YGN4H3TBS'
-    AWS_SECRET_ACCESS_KEY = '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'
-    AWS_STORAGE_BUCKET_NAME = 'reznikov-crm-1-bucket'
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
     AWS_S3_REGION_NAME = 'eu-west-2'
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
     AWS_LOCATION = 'static'
@@ -267,7 +266,7 @@ EMAIL_HOST_USER = 'esl.manager.mail@gmail.com'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_PASSWORD = 'eslaccountmanagerdevop'
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD_ESL')
 
 
 

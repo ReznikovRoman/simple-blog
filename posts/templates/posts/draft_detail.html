@@ -1,0 +1,26 @@
+{% extends 'posts/post_base.html' %}
+
+{% block title %}
+    Blog | Draft Details
+{% endblock %}
+
+{% block pre_post %}
+
+{% endblock %}
+
+
+{% block post_content %}
+    {% include "posts/_draft.html" with draft=object hide_delete=True %}
+
+    <form class="mt-5" method="POST">
+        {% csrf_token %}
+        <a href="{% url 'posts:edit_draft' slug=draft.slug %}" class="btn btn-info btn-lg mr-3">Edit</a>
+        <a href="{% url 'posts:publish' slug=draft.slug %}" class="btn btn-warning btn-lg mr-3">Publish</a>
+        <a href="{% url 'posts:delete' slug=draft.slug %}" class="btn btn-danger btn-lg mr-3">Delete</a>
+    </form>
+{% endblock %}
+
+
+
+
+

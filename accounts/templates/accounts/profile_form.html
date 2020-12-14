@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}
+    Blog | Profile
+{% endblock %}
+
+
+{% block content %}
+    <h4>Edit your profile</h4>
+    <form method="POST" id="profileForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ form.media }}
+        <button type="submit" class="btn btn-primary btn-large profile_button">Save</button>
+    </form>
+{% endblock %}

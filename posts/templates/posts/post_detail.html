@@ -1,0 +1,47 @@
+{% extends 'posts/post_base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}
+    Blog | Post Details
+{% endblock %}
+
+{% block pre_post %}
+
+{% endblock %}
+
+
+
+{% block post_content %}
+    {% include "posts/_post.html" with post=object hide_delete=True %}
+{% endblock %}
+
+
+{% block comments_section %}
+    <h2>Comments</h2>
+    <h4 class="mt-5">Leave a comment</h4>
+    <form method="POST" id="comment_form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button id="commentButton" type="submit" class="btn btn-primary btn-large mb-5">Post Comment</button>
+        {% endbuttons %}
+    </form>
+    {% for comment in post.comments.all %}
+        <div class="container user_comment mb-5">
+            <img class="profile_pic d-inline" src="{{ comment.author.profile.profile_pic.url }}" alt="User Profile Picture">
+            <p class="d-inline ml-3">{{ comment.author.username }}</p>
+
+            {% if user.is_staff %}
+                <a href="{% url 'posts:comment_remove' pk=comment.pk %}" class="btn btn-danger btn-sm ml-3 delete_comment">Delete Comment</a>
+            {% endif %}
+
+
+            <p class="mt-3">{{ comment.text|safe }}</p>
+            <p class="d-inline mr-3"><small>{{ comment.posted_date|date:'j.F Y' }}</small></p>
+        </div>
+        {% empty %}
+            <p>No comments posted</p>
+    {% endfor %}
+{% endblock %}
+

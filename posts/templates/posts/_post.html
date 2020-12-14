@@ -1,0 +1,19 @@
+
+{% if post.header_image %}
+    <img class="post_detail_header_image" src="{{ post.header_image.url }}" alt="Post Header Image">
+{% endif %}
+<h1 class="mt-3">{{ post.title }}</h1>
+
+{% if post.published_date %}
+    <p><small>{{ post.published_date|date:'Y-m-d' }}</small>
+{% else %}
+    <p><small>Creation Date: {{ post.created_date|date:'Y-m-d' }}</small>
+{% endif %}
+
+<div class="container mb-5 post_content">
+    <p class="mt-5">
+        {{ post.content|safe }}
+    </p>
+</div>
+
+

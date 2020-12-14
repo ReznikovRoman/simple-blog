@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Blog | Profile
+{% endblock %}
+
+
+{% block content %}
+    <h4>Profile</h4>
+
+    <div class="media">
+        <div class="media-body">
+            {{ profile.user.username }}
+            {{ profile.bio }}
+            {{ profile.profile_pic }}
+            {{ profile.uplay_nickname }}
+        </div>
+    </div>
+
+{% endblock %}

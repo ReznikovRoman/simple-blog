@@ -1,0 +1,17 @@
+
+1. Paginate posts (by 6) - DONE (30 minutes)
+
+2. Add "reset password" and "change password" features - DONE (40-50 minutes)
+
+3. Customize Django Admin - DONE (10 minutes)
+
+4*. Write tests
+
+5. Deploy project with Heroku and AWS (new db - Postgres:
+    - Postgres: https://www.youtube.com/watch?v=3HPq12w-dww&ab_channel=DennisIvy
+    - AWS:      https://www.youtube.com/watch?v=inQyZ7zFMHM&ab_channel=DennisIvy
+    - Heroku:   https://www.youtube.com/watch?v=kBwhtEIXGII&ab_channel=DennisIvy
+
+
+
+

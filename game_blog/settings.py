@@ -24,8 +24,11 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY_SIMPLE_BLOG')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = [
+    'https://reznikov-simple-blog.herokuapp.com',
+    '127.0.0.1',
+]
 
 
 # Application definition

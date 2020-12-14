@@ -104,8 +104,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'simple_blog',
         'USER': 'reznikovroman',
-        'PASSWORD': 'Roma.root3187451',
-        'HOST': 'simple-blog-1.cpd6yyhqunoa.us-east-2.rds.amazonaws.com',
+        'PASSWORD': os.environ.get('AWS_POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('AWS_POSGRES_HOST_SIMPLE_BLOG'),
         'PORT': '5432',
     }
 }

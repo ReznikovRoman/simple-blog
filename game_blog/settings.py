@@ -100,18 +100,25 @@ WSGI_APPLICATION = 'game_blog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'simple_blog',
-        'USER': 'reznikovroman',
-        'PASSWORD': os.environ.get('AWS_POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('AWS_POSGRES_HOST_SIMPLE_BLOG'),
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'simple_blog',
+#         'USER': 'reznikovroman',
+#         'PASSWORD': os.environ.get('AWS_POSTGRES_PASSWORD'),
+#         'HOST': os.environ.get('AWS_POSGRES_HOST_SIMPLE_BLOG'),
+#         'PORT': '5432',
+#     }
+# }
 # db_from_env = dj_database_url.config(conn_max_age=500)
 # DATABASES['default'].update(db_from_env)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation

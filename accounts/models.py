@@ -101,7 +101,8 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=40, null=True, blank=True)
 
     bio = models.TextField(null=True, blank=True)
-    profile_pic = models.ImageField(null=True, blank=True, upload_to='images/profile_pics/')
+    profile_pic = models.ImageField(null=True, blank=True, upload_to='images/profile_pics/',
+                                    default=get_default_profile_pic)
     uplay_nickname = models.CharField(max_length=60, null=True, blank=True, unique=True)
 
     @property

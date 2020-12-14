@@ -29,7 +29,8 @@ ALLOWED_HOSTS = [
     'https://reznikov-simple-blog.herokuapp.com',
     '127.0.0.1',
     'localhost',
-    f"{os.environ.get('AWS_STORAGE_BUCKET_NAME')}.s3.{os.environ.get('AWS_S3_REGION_NAME')}.amazonaws.com"
+    f"{os.environ.get('AWS_STORAGE_BUCKET_NAME')}.s3.{os.environ.get('AWS_S3_REGION_NAME')}.amazonaws.com",
+    '*',
 ]
 
 # Application definition

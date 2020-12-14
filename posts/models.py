@@ -19,7 +19,7 @@ register = template.Library()
 
 
 def get_default_header_image():
-    return '/images/post_headers/default_post_headers/default_post_header.jpg'
+    return 'images/post_headers/default_post_headers/default_post_header.jpg'
 
 
 class Post(models.Model):

@@ -81,26 +81,28 @@
                     <h1 class="text-center">Featured Posts</h1>
         <div class="row">
             {% for post in latest_posts %}
-                <div class="col-md-4 col-sm-12 col-xs-12">
-                    <div class="card">
-                          <a href="{% url 'posts:single' slug=post.slug %}" class="stretched-link"></a>
-                          {% if post.header_image %}
-                            <img class="card-img-top" src="{{ post.header_image.url }}" alt="Post Header Image">
-                          {% endif %}
+                {% if post.published_date %}
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="card">
+                              <a href="{% url 'posts:single' slug=post.slug %}" class="stretched-link"></a>
+                              {% if post.header_image %}
+                                <img class="card-img-top" src="{{ post.header_image.url }}" alt="Post Header Image">
+                              {% endif %}
 
-                          <div class="card-body">
-                            <h5 class="card-title">{{ post.title }}</h5>
-                            <p class="card-text"></p>
-                          </div><!-- card content -->
+                              <div class="card-body">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text"></p>
+                              </div><!-- card content -->
 
-                          <div class="card-footer">
-                            <p class="card-text d-inline">
-                              <small class="text-muted">{{ post.published_date|date:'Y-m-d' }}</small>
-                            </p>
-                            <i class="fas fa-arrow-right post_arrow_img d-inline"></i>
-                          </div>
-                      </div><!-- card -->
-                </div>
+                              <div class="card-footer">
+                                <p class="card-text d-inline">
+                                  <small class="text-muted">{{ post.published_date|date:'Y-m-d' }}</small>
+                                </p>
+                                <i class="fas fa-arrow-right post_arrow_img d-inline"></i>
+                              </div>
+                          </div><!-- card -->
+                    </div>
+                {% endif %}
             {% endfor %}
             </div>
         {% endif %}

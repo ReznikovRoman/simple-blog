@@ -31,7 +31,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     f"{os.environ.get('AWS_STORAGE_BUCKET_NAME')}.s3.{os.environ.get('AWS_S3_REGION_NAME')}.amazonaws.com",
-    '*',
 ]
 
 # Application definition
@@ -166,7 +165,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-USE_S3 = True
+USE_S3 = False
 
 if USE_S3:
     # AWS S3 Bucket (for static)
@@ -189,7 +188,10 @@ if USE_S3:
     STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
 else:
     STATIC_URL = '/static/'
-    STATIC_ROOT = BASE_DIR / 'static'
+    STATIC_ROOT = '/static/'
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static',
+    ]
 
 
 # MEDIA

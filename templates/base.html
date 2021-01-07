@@ -61,7 +61,7 @@
             <!-- Links -->
             {% if user.is_authenticated %}
                 <ul class="navbar-nav ml-2 pr-3 nav-flex-icons">
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown mt-2">
                         <a href="#" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
                           aria-haspopup="true" aria-expanded="false">
                             {% if user.profile.profile_pic %}
@@ -81,8 +81,8 @@
 
                         {#      Staff links     #}
                     {% if user.is_staff %}
-                        <li class="nav-item dropdown">
-                            <a href="" class="nav-link dropdown-toggle admin_link" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
+                        <li class="nav-item dropdown mt-2">
+                            <a href="" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">Admin</a>
 
                             <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
@@ -117,7 +117,7 @@
     </nav>
 
 
-    {#    Main Content#}
+    {#    Main Content  #}
     <div id="wrap" class="wrapper flex-grow-1">
         <div id="main" class="container content main_content mt-4 mb-5">
             {% block content %}
@@ -238,5 +238,6 @@
     <!-- Bootstrap 4 - JavaScript -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
             integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
 </body>
 </html>

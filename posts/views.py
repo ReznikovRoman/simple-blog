@@ -86,12 +86,6 @@ class CreatePost(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView
     form_class = forms.PostForm
 
     model = models.Post
-
-    # def get(self, request, *args, **kwargs):
-    #     print("Permissions: ")
-    #     for perm in list(Permission.objects.filter(group__user=self.request.user)):
-    #         print(perm)
-    #     print("Has perm: ", self.request.user.has_perm('posts.add_post'))
     
     def form_valid(self, form):
         self.object = form.save()

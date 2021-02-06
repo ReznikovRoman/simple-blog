@@ -1,6 +1,4 @@
-from django.urls import reverse
 from django.views import generic
-from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.conf import settings
 
@@ -11,14 +9,9 @@ import boto3
 from posts import models as post_models
 
 
-############################################################################################################
-
-
-class TestPage(generic.TemplateView):
-    template_name = 'test.html'
-
-
 class AboutPage(generic.TemplateView):
+    """About this project - view"""
+
     template_name = 'about.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -28,6 +21,8 @@ class AboutPage(generic.TemplateView):
 
 
 class HomePage(generic.TemplateView):
+    """Homepage - view"""
+
     template_name = 'index.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -38,10 +33,12 @@ class HomePage(generic.TemplateView):
         return context
 
     def get_latest_posts(self):
+        # TODO: reformat, move to separate file
         query = post_models.Post.objects.order_by('-published_date')[:3]
         return query
 
     def get_random_background_images(self):
+        # TODO: reformat, move to separate file
         if settings.USE_S3:
             prefix = "static/game_blog/images/background_images/"
             s3 = boto3.resource('s3',
@@ -64,24 +61,28 @@ class HomePage(generic.TemplateView):
 
 
 def error_404_view(request, *args, **kwargs):
+    """Handle 404 error - view"""
     response = render(request, '404_page.html')
     response.status_code = 404
     return response
 
 
 def error_500_view(request, *args, **kwargs):
+    """Handle 500 error - view"""
     response = render(request, '500_page.html')
     response.status_code = 500
     return response
 
 
 def error_403_view(request, *args, **kwargs):
+    """Handle 403 error - view"""
     response = render(request, '403_page.html')
     response.status_code = 403
     return response
 
 
 def error_400_view(request, *args, **kwargs):
+    """Handle 400 error - view"""
     response = render(request, '400_page.html')
     response.status_code = 400
     return response

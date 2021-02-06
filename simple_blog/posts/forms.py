@@ -1,12 +1,7 @@
-
 from django import forms
-from ckeditor.widgets import CKEditorWidget
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 from . import models
-
-
-################################################################################################################
 
 
 class PostForm(forms.ModelForm):

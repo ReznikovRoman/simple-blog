@@ -1,28 +1,17 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.views import generic
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-
-#           Extra Imports for the Login and Logout Capabilities
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
-
 from django.db.models import Q
-
-from braces.views import SelectRelatedMixin
 
 from . import forms
 from . import models
 
-##################################################################################################################
-
 
 class PostList(generic.ListView):
+    """List posts (paginate by 6)"""
+
     model = models.Post
     paginate_by = 6
 
@@ -36,6 +25,8 @@ class PostList(generic.ListView):
 
 
 class PostDetail(generic.DetailView):
+    """Single post's details"""
+
     model = models.Post
     slug_url_kwarg = 'slug'
     query_pk_and_slug = True
@@ -44,6 +35,7 @@ class PostDetail(generic.DetailView):
         context = super(PostDetail, self).get_context_data(**kwargs)
         post = get_object_or_404(models.Post, slug=self.kwargs.get('slug'))
 
+        # TODO: move business logic
         if self.request.method == 'POST':
             form = forms.CommentForm(data=self.request.POST)
 
@@ -54,11 +46,14 @@ class PostDetail(generic.DetailView):
                 comment.save()
         else:
             form = forms.CommentForm()
+
         context['form'] = form
         return context
 
     def post(self, request, *args, **kwargs):
         post = get_object_or_404(models.Post, slug=self.kwargs.get('slug'))
+
+        # TODO: move business logic
         if self.request.method == 'POST':
             if self.request.user.is_authenticated:
                 form = forms.CommentForm(data=self.request.POST)
@@ -79,12 +74,11 @@ class PostDetail(generic.DetailView):
 
 
 class CreatePost(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
+    """Post's creation"""
+
     permission_required = 'posts.add_post'
-
     redirect_field_name = 'posts:draft'
-
     form_class = forms.PostForm
-
     model = models.Post
     
     def form_valid(self, form):
@@ -93,12 +87,11 @@ class CreatePost(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView
 
 
 class UpdatePost(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
+    """Edit post"""
+
     permission_required = 'posts.change_post'
-
     redirect_field_name = 'posts:single'
-
     form_class = forms.PostForm
-
     model = models.Post
 
     def get_success_url(self):
@@ -106,39 +99,37 @@ class UpdatePost(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView
 
 
 class SearchPostView(generic.ListView):
+    """Search results (list of posts)"""
+
     model = models.Post
     template_name = 'posts/post_search_results.html'
 
     def get_queryset(self):
-        query = self.request.GET.get('q')
+        query_title = self.request.GET.get('q')
         object_list = models.Post.objects.filter(
-            Q(title__icontains=query),
+            Q(title__icontains=query_title),
             published_date__isnull=False
         )
         return object_list
 
 
 class DeletePost(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteView):
+    """Delete Post"""
+
     permission_required = 'posts.delete_post'
-
     redirect_field_name = 'posts:single'
-
     form_class = forms.PostForm
-
     model = models.Post
-
     success_url = reverse_lazy('posts:all')
 
 
 class DraftListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
+    """List drafts"""
+
     permission_required = 'posts.add_post'
-
     redirect_field_name = 'posts:single'
-
     model = models.Post
-
     context_object_name = 'draft_list'
-
     template_name = 'posts/draft_list.html'
 
     def get_queryset(self):
@@ -146,8 +137,9 @@ class DraftListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
 
 
 class DeletePostList(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
-    permission_required = 'posts.delete_post'
+    """List posts that can be deleted"""
 
+    permission_required = 'posts.delete_post'
     model = models.Post
     template_name = 'posts/post_delete_list.html'
 
@@ -156,8 +148,9 @@ class DeletePostList(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVi
 
 
 class DraftDetail(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
-    permission_required = 'posts.add_post'
+    """Single draft detail"""
 
+    permission_required = 'posts.add_post'
     model = models.Post
     template_name = 'posts/draft_detail.html'
     context_object_name = 'draft'
@@ -167,6 +160,8 @@ class DraftDetail(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailVie
 
 
 class UpdateDraft(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
+    """Edit draft"""
+
     permission_required = 'posts.change_post'
     model = models.Post
     template_name = 'posts/post_form.html'
@@ -178,8 +173,9 @@ class UpdateDraft(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateVie
 
 
 class PostPublish(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
-    permission_required = 'posts.add_post'
+    """Publish post"""
 
+    permission_required = 'posts.add_post'
     model = models.Post
     template_name = 'posts/draft_publish.html'
     context_object_name = 'draft'
@@ -191,7 +187,7 @@ class PostPublish(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailVie
             messages.warning(self.request,
                              "You cannot publish this post, because it does not exist")
         else:
-            post.publish()
+            post.publish()  # TODO: Move method from model to a separate file
             messages.success(self.request,
                              "You have successfully published this post!")
             return redirect('/posts/')
@@ -202,9 +198,9 @@ class PostPublish(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailVie
 
 
 class DeleteComment(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteView):
+    """Delete comment"""
 
     permission_required = 'posts.delete_comment'
-
     model = models.Comment
     template_name = 'posts/comment_confirm_delete.html'
     context_object_name = 'comment'

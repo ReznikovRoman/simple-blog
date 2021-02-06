@@ -1,41 +1,36 @@
 from django.db import models
-from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+from django import template
 
 import misaka
-from ckeditor.fields import RichTextField
 from ckeditor_uploader.fields import RichTextUploadingField
-
-from django.contrib.auth import get_user_model
 
 from accounts import models as account_models
 
-from django import template
-register = template.Library()
 
-##################################################################################################################
+register = template.Library()
 
 
 def get_default_header_image():
+    # TODO: move to the separate file / Post model
     return 'images/post_headers/default_post_headers/default_post_header.jpg'
 
 
 class Post(models.Model):
-    slug = models.SlugField(allow_unicode=True, unique=True)
+    """Single post on the website"""
 
-    created_date = models.DateTimeField(auto_now=True)
-    published_date = models.DateTimeField(blank=True, null=True)
+    slug = models.SlugField(verbose_name="slug", allow_unicode=True, unique=True)
+    created_date = models.DateTimeField(verbose_name="created date", auto_now=True)
+    published_date = models.DateTimeField(verbose_name="published date", blank=True, null=True)
+    header_image = models.ImageField(verbose_name="header image", null=True, blank=True,
+                                     upload_to='images/post_headers/', default=get_default_header_image)
+    title = models.CharField(verbose_name="title", max_length=255)
+    content = RichTextUploadingField(verbose_name="main content", blank=True, null=True)
+    content_html = models.TextField(editable=False)  # TODO: remove field
 
-    header_image = models.ImageField(null=True, blank=True, upload_to='images/post_headers/',
-                                     default=get_default_header_image)
-    title = models.CharField(max_length=255)
-    # content = models.TextField()
-    content = RichTextUploadingField(blank=True, null=True)
-    content_html = models.TextField(editable=False)
-
-    def publish(self):
+    def publish(self):  # TODO: Move method from model to a separate file
         self.published_date = timezone.now()
         self.save()
 
@@ -55,10 +50,11 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    """Comment related to a Post"""
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE, )
     author = models.ForeignKey(account_models.CustomUser, related_name='comment', on_delete=models.CASCADE)
-    text = models.TextField()
-    posted_date = models.DateTimeField(auto_now=True)
+    text = models.TextField(verbose_name='text of the comment')  # TODO - ?: max_length
+    posted_date = models.DateTimeField(verbose_name="posted date", auto_now=True)
 
     def __str__(self):
         return f"Author: {self.author}, Text: {self.text}"

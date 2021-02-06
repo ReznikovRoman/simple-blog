@@ -1,17 +1,12 @@
 
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 
 from . import models
 
 
-####################################################################################################################
-
-
 class CustomUserCreateForm(UserCreationForm):
+    """Form for creating new users"""
     class Meta:
         fields = ("username", "email", "password1", "password2")
         model = models.CustomUser
@@ -23,6 +18,7 @@ class CustomUserCreateForm(UserCreationForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
+    """Form for updating user's profile"""
     class Meta:
         model = models.Profile
         fields = ('bio', 'profile_pic', 'uplay_nickname')

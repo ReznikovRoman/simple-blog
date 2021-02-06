@@ -1,20 +1,11 @@
 from django.db import models
-
 from django.contrib.auth.models import (User, AbstractUser, BaseUserManager, AbstractBaseUser,
                                         PermissionsMixin, Permission)
-
-from django.utils import timezone
-
 from django.conf import settings
-
-from django.db.models.signals import post_save, pre_save
-from django.dispatch import receiver
-
-
-######################################################################################################################
 
 
 class CustomUserManager(BaseUserManager):
+    """Manager for CustomUser model"""
     def create_user(self, email, username, password=None):
         if not email:
             raise ValueError("Users must have an email address")
@@ -51,27 +42,27 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-##############################################################################################################
-
-
 def get_default_profile_pic():
+    # TODO: move to the separate file / Profile model
     return 'images/profile_pics/default_profile_pics/profile_pic.jpg'
 
 
 class CustomUser(AbstractUser, PermissionsMixin):
+    """Extended django User"""
 
     # required fields
     email = models.EmailField(verbose_name='email', max_length=60, unique=True)
-    username = models.CharField(max_length=30, unique=True)
+    username = models.CharField(verbose_name='username', max_length=30, unique=True)
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
-    is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
+    is_admin = models.BooleanField(verbose_name='is user an admin', default=False)
+    is_active = models.BooleanField(verbose_name='is user active', default=True)
+    is_staff = models.BooleanField(verbose_name='is staff', default=False)
+    is_superuser = models.BooleanField(verbose_name='is user a superuser', default=False)
 
     # login parameter
     USERNAME_FIELD = 'email'
+
     REQUIRED_FIELDS = ['username', ]
 
     objects = CustomUserManager()
@@ -94,16 +85,15 @@ class CustomUser(AbstractUser, PermissionsMixin):
 
 
 class Profile(models.Model):
+    """User's profile"""
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile',  on_delete=models.CASCADE)
-
-    first_name = models.CharField(max_length=40, null=True, blank=True)
-    last_name = models.CharField(max_length=40, null=True, blank=True)
-
-    bio = models.TextField(null=True, blank=True)
-    profile_pic = models.ImageField(null=True, blank=True, upload_to='images/profile_pics/',
-                                    default=get_default_profile_pic)
-    uplay_nickname = models.CharField(max_length=60, null=True, blank=True, unique=True)
+    first_name = models.CharField(verbose_name="first name", max_length=40, null=True, blank=True)
+    last_name = models.CharField(verbose_name="last name", max_length=40, null=True, blank=True)
+    bio = models.TextField(verbose_name="biography", null=True, blank=True)
+    profile_pic = models.ImageField(verbose_name="profile picture", null=True, blank=True,
+                                    upload_to='images/profile_pics/', default=get_default_profile_pic)
+    uplay_nickname = models.CharField(verbose_name="uplay nickname", max_length=60, null=True, blank=True, unique=True)
 
     @property
     def profile_pic_url(self):
@@ -114,32 +104,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Name: {self.last_name} {self.first_name}"
-    
-
-
-
-# class Editor(models.Model):
-#     user = models.OneToOneField(User, related_name='editor', on_delete=models.CASCADE)
-#
-#     class Meta:
-#         permissions = [
-#             ('read_posts', "Can read posts"),
-#             ('leave_comments', "Can leave comments"),
-#             ('create_posts', "Can create new posts"),
-#             ('edit_posts', "Can edit posts"),
-#             ('delete_posts', "Can delete posts"),
-#         ]
-
-
-# class CustomUserProfile(models.Model):
-#     user = models.OneToOneField(User, related_name='profile', null=True, on_delete=models.CASCADE)
-#
-#     bio = models.TextField(null=True, blank=True)
-#     profile_pic = models.ImageField(null=True, blank=True, upload_to='images/profile_pics/')
-#     uplay_nickname = models.CharField(null=True, blank=True, max_length=255)
-#
-#     def __str__(self):
-#         return self.user.username
 
 
 

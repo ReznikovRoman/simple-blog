@@ -1,15 +1,8 @@
-from django.contrib.auth import login, logout
-from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DetailView, UpdateView
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
-
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
+from django.http import HttpResponseRedirect
 from django.contrib.auth import views as auth_views
-
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.template import RequestContext
-
-from braces.views import SelectRelatedMixin
 
 from . import forms
 from . import models
@@ -21,6 +14,8 @@ from . import mixins as custom_mixins
 
 
 class SignUp(CreateView):
+    """User-Signup view"""
+
     form_class = forms.CustomUserCreateForm
     success_url = reverse_lazy('accounts:login')
     template_name = 'accounts/signup.html'
@@ -32,6 +27,8 @@ class SignUp(CreateView):
 
 
 class LoginView(auth_views.LoginView):
+    """User-Login view"""
+
     template_name = 'accounts/login.html'
 
     def get(self, request, *args, **kwargs):
@@ -41,6 +38,7 @@ class LoginView(auth_views.LoginView):
 
 
 class EditUserProfile(LoginRequiredMixin, UpdateView):
+    """Update profile view"""
     model = models.Profile
     form_class = forms.ProfileUpdateForm
     template_name = 'accounts/profile_update.html'

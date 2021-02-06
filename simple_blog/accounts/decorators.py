@@ -1,14 +1,9 @@
-
 from functools import wraps
-
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
-
-
-################################################################################################################
+from django.shortcuts import redirect
 
 
 def unauthenticated_user(view_func):
+    """Decorator that handles unauthenticated users"""
     @wraps(view_func)
     def wrapper_func(request, *args, **kwargs):
         if request.user.is_authenticated:

@@ -2,14 +2,16 @@ from functools import wraps
 from django.shortcuts import redirect
 
 
-def unauthenticated_user(view_func):
-    """Decorator that handles unauthenticated users"""
+def handle_authenticated_user(view_func):
+    """Decorator that handles authenticated users (restrict access to the 'sign up', 'login', etc.)"""
+
     @wraps(view_func)
-    def wrapper_func(request, *args, **kwargs):
-        if request.user.is_authenticated:
+    def wrapper_func(view, *args, **kwargs):
+        if view.request.user.is_authenticated:
             return redirect('/posts/')
         else:
-            return view_func(request, *args, **kwargs)
+            return view_func(view, *args, **kwargs)
+
     return wrapper_func
 
 

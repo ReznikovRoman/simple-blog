@@ -1,16 +1,11 @@
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
-from django.http import HttpResponseRedirect
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from . import forms
 from . import models
-from . import decorators as custom_decorators
-from . import mixins as custom_mixins
-
-
-################################################################################################################
+from .decorators import (handle_authenticated_user, )
 
 
 class SignUp(CreateView):
@@ -19,10 +14,9 @@ class SignUp(CreateView):
     form_class = forms.CustomUserCreateForm
     success_url = reverse_lazy('accounts:login')
     template_name = 'accounts/signup.html'
-    
+
+    @handle_authenticated_user
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return HttpResponseRedirect('/posts/')
         return super(SignUp, self).get(request, *args, **kwargs)
 
 
@@ -31,9 +25,8 @@ class LoginView(auth_views.LoginView):
 
     template_name = 'accounts/login.html'
 
+    @handle_authenticated_user
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return HttpResponseRedirect('/posts/')
         return super(LoginView, self).get(request, *args, **kwargs)
 
 

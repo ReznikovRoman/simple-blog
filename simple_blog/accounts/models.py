@@ -43,7 +43,6 @@ class CustomUserManager(BaseUserManager):
 
 
 def get_default_profile_pic():
-    # TODO: move to the separate file / Profile model
     return 'images/profile_pics/default_profile_pics/profile_pic.jpg'
 
 

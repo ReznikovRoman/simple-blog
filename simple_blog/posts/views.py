@@ -1,12 +1,13 @@
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.views import generic
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.db.models import Q
 
 from . import forms
 from . import models
+from .services import (publish_post, save_comment, get_published_posts, get_search_results,
+                       get_drafts, get_all_posts, get_comment_by_pk, get_post_by_slug)
 
 
 class PostList(generic.ListView):
@@ -16,7 +17,7 @@ class PostList(generic.ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        return models.Post.objects.filter(published_date__isnull=False).order_by('-published_date')
+        return get_published_posts()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(PostList, self).get_context_data(**kwargs)
@@ -33,36 +34,16 @@ class PostDetail(generic.DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(PostDetail, self).get_context_data(**kwargs)
-        post = get_object_or_404(models.Post, slug=self.kwargs.get('slug'))
-
-        # TODO: move business logic
-        if self.request.method == 'POST':
-            form = forms.CommentForm(data=self.request.POST)
-
-            if form.is_valid():
-                comment = form.save(commit=False)
-                comment.post = post
-                comment.author = self.request.user
-                comment.save()
-        else:
-            form = forms.CommentForm()
-
+        form = forms.CommentForm()
         context['form'] = form
         return context
 
     def post(self, request, *args, **kwargs):
-        post = get_object_or_404(models.Post, slug=self.kwargs.get('slug'))
-
-        # TODO: move business logic
         if self.request.method == 'POST':
             if self.request.user.is_authenticated:
                 form = forms.CommentForm(data=self.request.POST)
-
                 if form.is_valid():
-                    comment = form.save(commit=False)
-                    comment.post = post
-                    comment.author = self.request.user
-                    comment.save()
+                    save_comment(form, self.kwargs.get('slug'), self.request.user)
             else:
                 return redirect('accounts:login')
         else:
@@ -70,7 +51,7 @@ class PostDetail(generic.DetailView):
         return redirect('posts:single', slug=self.kwargs.get('slug'))
 
     def get_queryset(self):
-        return models.Post.objects.filter(published_date__isnull=False)
+        return get_published_posts()
 
 
 class CreatePost(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
@@ -105,12 +86,7 @@ class SearchPostView(generic.ListView):
     template_name = 'posts/post_search_results.html'
 
     def get_queryset(self):
-        query_title = self.request.GET.get('q')
-        object_list = models.Post.objects.filter(
-            Q(title__icontains=query_title),
-            published_date__isnull=False
-        )
-        return object_list
+        return get_search_results(self.request.GET.get('q'))
 
 
 class DeletePost(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteView):
@@ -133,18 +109,20 @@ class DraftListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
     template_name = 'posts/draft_list.html'
 
     def get_queryset(self):
-        return models.Post.objects.filter(published_date__isnull=True).order_by('-created_date')
+        return get_drafts()
 
 
 class DeletePostList(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     """List posts that can be deleted"""
+
+    paginate_by = 6
 
     permission_required = 'posts.delete_post'
     model = models.Post
     template_name = 'posts/post_delete_list.html'
 
     def get_queryset(self):
-        return models.Post.objects.order_by('-published_date')
+        return get_all_posts()
 
 
 class DraftDetail(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
@@ -156,7 +134,7 @@ class DraftDetail(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailVie
     context_object_name = 'draft'
 
     def get_queryset(self):
-        return models.Post.objects.filter(published_date__isnull=True)
+        return get_drafts()
 
 
 class UpdateDraft(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
@@ -182,19 +160,18 @@ class PostPublish(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailVie
 
     def post(self, request, *args, **kwargs):
         try:
-            post = get_object_or_404(models.Post, slug=self.kwargs.get('slug'))
+            post = get_post_by_slug(self.kwargs.get('slug'))
         except models.Post.DoesNotExist:
             messages.warning(self.request,
                              "You cannot publish this post, because it does not exist")
         else:
-            post.publish()  # TODO: Move method from model to a separate file
+            publish_post(post)
             messages.success(self.request,
                              "You have successfully published this post!")
             return redirect('/posts/')
-        # return super(PostPublish, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return models.Post.objects.filter(published_date__isnull=True)
+        return get_drafts()
 
 
 class DeleteComment(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteView):
@@ -206,13 +183,11 @@ class DeleteComment(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteV
     context_object_name = 'comment'
 
     def get_success_url(self):
-        comment = get_object_or_404(models.Comment, pk=self.kwargs.get('pk'))
-        post_slug = comment.post.slug
-        success_url = reverse_lazy('posts:single', kwargs={'slug': post_slug})
-        return success_url
+        return reverse_lazy('posts:single',
+                            kwargs={'slug': get_comment_by_pk(self.kwargs.get('pk')).post.slug})
 
-    def get_queryset(self):
-        return models.Comment.objects.filter(pk=self.kwargs.get('pk'))
+    def get_object(self, queryset=None):
+        return get_comment_by_pk(self.kwargs.get('pk'))
 
 
 

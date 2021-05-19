@@ -1,11 +1,11 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import (User, AbstractUser, BaseUserManager, AbstractBaseUser,
                                         PermissionsMixin, Permission)
-from django.conf import settings
 
 
 class CustomUserManager(BaseUserManager):
-    """Manager for CustomUser model"""
+    """Manager for CustomUser model."""
     def create_user(self, email, username, password=None):
         if not email:
             raise ValueError("Users must have an email address")
@@ -47,7 +47,7 @@ def get_default_profile_pic():
 
 
 class CustomUser(AbstractUser, PermissionsMixin):
-    """Extended django User"""
+    """Extended django User."""
 
     # required fields
     email = models.EmailField(verbose_name='email', max_length=60, unique=True)
@@ -62,7 +62,7 @@ class CustomUser(AbstractUser, PermissionsMixin):
     # login parameter
     USERNAME_FIELD = 'email'
 
-    REQUIRED_FIELDS = ['username', ]
+    REQUIRED_FIELDS = ['username']
 
     objects = CustomUserManager()
 
@@ -84,7 +84,7 @@ class CustomUser(AbstractUser, PermissionsMixin):
 
 
 class Profile(models.Model):
-    """User's profile"""
+    """User's profile."""
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile',  on_delete=models.CASCADE)
     first_name = models.CharField(verbose_name="first name", max_length=40, null=True, blank=True)
@@ -94,16 +94,12 @@ class Profile(models.Model):
                                     upload_to='images/profile_pics/', default=get_default_profile_pic)
     uplay_nickname = models.CharField(verbose_name="uplay nickname", max_length=60, null=True, blank=True, unique=True)
 
+    def __str__(self):
+        return f"Name: {self.last_name} {self.first_name}"
+
     @property
     def profile_pic_url(self):
         return str(self.profile_pic)[1:]
 
     def get_profile_pic_filename(self):
         return str(self.profile_pic)[str(self.profile_pic).index(f'profile_pics/{self.pk}/'):]
-
-    def __str__(self):
-        return f"Name: {self.last_name} {self.first_name}"
-
-
-
-

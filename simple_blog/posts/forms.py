@@ -1,24 +1,24 @@
-from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
-from . import models
+from django import forms
+
+from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
     class Meta:
-        fields = ('title', 'header_image', 'content')
-        model = models.Post
+        model = Post
+        fields = ('title', 'header_image', 'content',)
         widgets = {
             'title': forms.TextInput(attrs={'class': 'post_title_class input_field'}),
             'content': CKEditorUploadingWidget(),
         }
-        
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = models.Comment
-        fields = ('text', )
-
+        model = Comment
+        fields = ('text',)
         widgets = {
             'text': forms.Textarea(attrs={'class': 'comment_text_class input_field'}),
         }
@@ -26,9 +26,3 @@ class CommentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CommentForm, self).__init__(*args, **kwargs)
         self.fields['text'].label = ''
-
-
-
-
-
-

@@ -1,26 +1,28 @@
-from django.conf import settings
-
-import boto3
-import random
 import os
+import random
 from typing import List
 
-from posts import models as post_models
+import boto3
+
+from django.conf import settings
+from django.db.models import QuerySet
+
+from posts.models import Post
 
 
-def get_latest_posts() -> List[post_models.Post]:
+def get_latest_posts() -> QuerySet[Post]:
     """
-    Returns 3 latest published posts (sorted by a published date)
+    Returns 3 latest published posts (sorted by a published date).
 
     Returns:
-        List[post_models.Post]: List of 3 latest posts
+        QuerySet[Post]: QuerySet of 3 latest posts
     """
-    return post_models.Post.objects.order_by('-published_date')[:3]
+    return Post.objects.order_by('-published_date')[:3]
 
 
 def get_random_background_images() -> List[str]:
     """
-    Returns a list of images (urls) depending on a storage backend
+    Returns a list of images (urls) depending on a storage backend.
 
     Returns:
         List[str]: list of images' urls
@@ -41,6 +43,7 @@ def get_random_background_images() -> List[str]:
 
     images_count = 3
     random_images = random.sample(images_urls, images_count)
+
     return random_images
 
 

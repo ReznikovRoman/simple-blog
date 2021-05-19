@@ -3,7 +3,7 @@ from django.http import Http404
 
 
 class RestrictStaffToAdminMiddleware(object):
-    """A middleware that restricts staff members access to administration panels"""
+    """A middleware that restricts staff members access to administration panels."""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -24,6 +24,3 @@ class RestrictStaffToAdminMiddleware(object):
                     raise Http404
             else:
                 raise Http404
-
-
-

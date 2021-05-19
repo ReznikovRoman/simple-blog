@@ -24,19 +24,3 @@ urlpatterns = [
     path('<slug>/delete/', views.DeletePost.as_view(), name='delete'),
     path('<slug>/edit/', views.UpdatePost.as_view(), name='edit'),
 ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

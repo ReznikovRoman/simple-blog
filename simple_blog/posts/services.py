@@ -1,5 +1,5 @@
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 from django.db.models import QuerySet, Q
 
 from .forms import CommentForm
@@ -9,7 +9,7 @@ from accounts.models import CustomUser
 
 def get_post_by_slug(post_slug: str) -> Post:
     """
-    Returns a Post by a given slug
+    Returns a Post by a given slug.
 
     Args:
         post_slug (str): post's slug
@@ -22,7 +22,7 @@ def get_post_by_slug(post_slug: str) -> Post:
 
 def get_comment_by_pk(comment_pk: int) -> Comment:
     """
-    Returns a Comment by a given pk
+    Returns a Comment by a given pk.
 
     Args:
         comment_pk (int): comment's pk
@@ -35,7 +35,7 @@ def get_comment_by_pk(comment_pk: int) -> Comment:
 
 def publish_post(post: Post) -> None:
     """
-    "Publishes" a post - fills in the 'published_date' field
+    "Publishes" a post - fills in the 'published_date' field.
 
     Args:
         post (Post): post that should be published
@@ -47,9 +47,9 @@ def publish_post(post: Post) -> None:
     post.save()
 
 
-def save_comment(form: CommentForm, post_slug: str, comment_author: CustomUser) -> None:
+def save_comment_from_form(form: CommentForm, post_slug: str, comment_author: CustomUser) -> None:
     """
-    Saves a Comment
+    Saves a Comment.
 
     Args:
         form (CommentForm): Comment creation form
@@ -67,7 +67,7 @@ def save_comment(form: CommentForm, post_slug: str, comment_author: CustomUser) 
 
 def get_all_posts() -> QuerySet[Post]:
     """
-    Returns a QuerySet of all posts (ordered by a published date - from published posts to drafts)
+    Returns a QuerySet of all posts (ordered by a published date - from published posts to drafts).
 
     Returns:
         QuerySet[Post]: all posts
@@ -77,7 +77,7 @@ def get_all_posts() -> QuerySet[Post]:
 
 def get_published_posts() -> QuerySet[Post]:
     """
-    Returns a QuerySet of published posts (ordered by a published date - from newest to oldest)
+    Returns a QuerySet of published posts (ordered by a published date - from newest to oldest).
 
     Returns:
         QuerySet[Post]: published posts
@@ -87,7 +87,7 @@ def get_published_posts() -> QuerySet[Post]:
 
 def get_search_results(title_query: str) -> QuerySet[Post]:
     """
-    Returns search results - a QuerySet of posts
+    Returns search results - a QuerySet of posts.
 
     Args:
         title_query (str): query
@@ -97,28 +97,15 @@ def get_search_results(title_query: str) -> QuerySet[Post]:
     """
     return Post.objects.filter(
         Q(title__icontains=title_query),
-        published_date__isnull=False)
+        published_date__isnull=False
+    )
 
 
 def get_drafts() -> QuerySet[Post]:
     """
-    Returns a QuerySet of drafts (ordered by a created date - from newest to oldest)
+    Returns a QuerySet of drafts (ordered by a created date - from newest to oldest).
 
     Returns:
         QuerySet[Post]: drafts
     """
     return Post.objects.filter(published_date__isnull=True).order_by('-created_date')
-
-
-
-
-
-
-
-
-
-
-
-
-
-

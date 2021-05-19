@@ -1,39 +1,37 @@
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
 from django.contrib.auth import views as auth_views
+from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from . import forms
-from . import models
-from .decorators import (handle_authenticated_user, )
+from .forms import CustomUserCreateForm, ProfileUpdateForm
+from .models import Profile
+from .decorators import restrict_authenticated_users
 
 
 class SignUp(CreateView):
-    """User-Signup view"""
-
-    form_class = forms.CustomUserCreateForm
+    """User-Signup view."""
+    form_class = CustomUserCreateForm
     success_url = reverse_lazy('accounts:login')
     template_name = 'accounts/signup.html'
 
-    @handle_authenticated_user
+    @restrict_authenticated_users
     def get(self, request, *args, **kwargs):
         return super(SignUp, self).get(request, *args, **kwargs)
 
 
 class LoginView(auth_views.LoginView):
-    """User-Login view"""
-
+    """User-Login view."""
     template_name = 'accounts/login.html'
 
-    @handle_authenticated_user
+    @restrict_authenticated_users
     def get(self, request, *args, **kwargs):
         return super(LoginView, self).get(request, *args, **kwargs)
 
 
 class EditUserProfile(LoginRequiredMixin, UpdateView):
-    """Update profile view"""
-    model = models.Profile
-    form_class = forms.ProfileUpdateForm
+    """Update profile view."""
+    model = Profile
+    form_class = ProfileUpdateForm
     template_name = 'accounts/profile_update.html'
     context_object_name = 'profile'
     success_url = reverse_lazy('accounts:profile')
@@ -53,22 +51,3 @@ class EditUserProfile(LoginRequiredMixin, UpdateView):
         self.object.user.profile = self.request.user.profile
         self.object.save()
         return super(EditUserProfile, self).form_valid(form)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
